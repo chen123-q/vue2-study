@@ -1,14 +1,23 @@
 {
-  "name": "vue2",
+  "private": true,
+  "name": "vue2-study",
   "version": "1.0.0",
-  "description": "",
+  "description": "学习vue2",
   "main": "index.js",
   "scripts": {
     "dev": "rollup -cw"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "vue2",
+    "study"
+  ],
+  "author": "cx",
   "license": "ISC",
+  "homepage": "https://gitee.com/cx-7788/vue2-study",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/cx-7788/vue2-study.git"
+  },
   "devDependencies": {
     "@babel/core": "^7.22.10",
     "@babel/preset-env": "^7.22.10",
@@ -17,4 +26,3 @@
     "rollup": "^2.79.1"
   }
 }
-

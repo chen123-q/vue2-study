@@ -1,4 +1,5 @@
 import { compileToFunction } from "./compiler"
+import { mountComponent } from "./lifecycle"
 import { initState } from "./state"
 
 export function initMixin(Vue) {
@@ -25,10 +26,11 @@ export function initMixin(Vue) {
             }
             if (template) {
                 const render = compileToFunction(template)
+                opts.render = render // 最终的render
             }
 
         }
-
+        mountComponent(vm, el) // 挂载
     }
 }
 
