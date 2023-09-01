@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v2-study</title>
+</head>
+
+<body>
+    <!-- 给模板中的属性增加一个收集器 dep -->
+    <!-- 页面渲染的时候将渲染逻辑封装到 watcher 中  vm._update(vm._render())-->
+    <!-- 让dep记住这个watcher 稍后属性变化了可以找到对应的dep中存放的 watcher 进行重新渲染-->
+    <!-- 观察者模式 -->
+
+    <div id="app" style="background:pink;color:red">
+        <p key="name">hello{{name}}{{age}}</p>
+        <span style="font-size: 20px;"> 姓名：{{name}}</span>
+        <span> 年龄：{{age}}</span>
+
+    </div>
+    <script src="../dist/vue.js"></script>
+
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    name: 'cx',
+                    age: 25,
+                    address: {
+                        num: 5
+                    }
+                }
+            },
+        })
+
+        // 属性和视图关联，做到数据变化可以自动更新视图（观察者模式）
+        setTimeout(() => {
+            // vm.name = '小明'
+            // vm.age = '18'
+            vm.address = 5
+        }, 2000)
+
+
+
+
+        // 1. 观察者模式实现依赖收集
+        // 2. 异步更新策略
+        // 3. mixin 的实现原理
+
+    </script>
+</body>
+
+</html>

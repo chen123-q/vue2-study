@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v2-study</title>
+</head>
+
+<body>
+    <div id="app" style="background:pink;color:red">
+        <p key="name">hello{{name}}{{age}}</p>
+        <span style="font-size: 20px;"> 姓名：{{name}}</span>
+        <span> 年龄：{{age}}</span>
+
+    </div>
+    <script src="../dist/vue.js"></script>
+
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    name: 'cx',
+                    age: 25
+                }
+            },
+        })
+
+        // 属性和视图关联，做到数据变化可以自动更新视图（观察者模式）
+        setTimeout(() => {
+            vm.name = '小明'
+            vm.age = '18'
+            vm._update(vm._render()) // 重新根据数据渲染出一个虚拟DOM
+        }, 2000)
+
+
+
+
+        // 1) 将数据先处理成响应式 initState (针对对象增加defineProperty,针对数组重写方法)
+        // 2) 模板编译：将模板转换成ast语法树， 将ast语法树生成 **render**方法
+        // 3) 调用 render 函数会进行取值操作，产生对应的虚拟DOM render(){ _c('div',null,_v(name))} 触发 get 方法
+        // 4) 将虚拟 DOM 渲染成真实 DOM
+
+    </script>
+</body>
+
+</html>

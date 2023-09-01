@@ -53,7 +53,7 @@ function genChildren(children) {
 }
 function codegen(ast) {
     const children = genChildren(ast.children)
-    let code = `_c(${ast.tag},${ast.attrs.length > 0 ? genProps(ast.attrs) : null}${ast.children.length ? `,${children}` : ''})`
+    let code = `_c('${ast.tag}',${ast.attrs.length > 0 ? genProps(ast.attrs) : null}${ast.children.length ? `,${children}` : ''})`
 
     return code
 
@@ -62,7 +62,6 @@ export function compileToFunction(template) {
     // 1. 将template转化成ast语法树
     const ast = parseHTML(template)
 
-
     // 2.生成render方法
     let code = codegen(ast)
     code = `with(this){return ${code}}`
@@ -70,7 +69,7 @@ export function compileToFunction(template) {
     const render = new Function(code)
     // _c(div,{id:"app",style:{"background":"pink","color":"red"}},
     //    _c(p,null,_v("hello"+_s(name)+_s(age))),
-    //      _c(span,{style:{"font-size":" 20px"}},
-    //_v("姓名："+_s(name))),_c(span,null,_v("年龄："+_s(age))))
+    //    _c(span,{style:{"font-size":" 20px"}},_v("姓名："+_s(name))),
+    //    _c(span,null,_v("年龄："+_s(age))))
     return render
 }
