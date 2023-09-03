@@ -3,10 +3,14 @@ import Dep from "./dep"
 
 class Observe {
     constructor(data) {
+        // 给每个对象都增加收集功能
+        this.dep = new Dep()
+
         // data.__ob__ = this // 标识
+        // Object.defineProperty 只能劫持已有属性
         Object.defineProperty(data, '__ob__', {
             value: this,
-            enumerable: false
+            enumerable: false // 不可枚举
         })
 
         if (Array.isArray(data)) {
@@ -25,10 +29,19 @@ class Observe {
         data.forEach(item => observe(item))
     }
 }
+function dependArray(value) {
+
+    for (let i = 0; i < value.length; i++) {
+        let current = value[i]
+        if (Array.isArray(current)) {
+            current.__ob__.dep.depend()
+            dependArray(current)
+        }
+    }
+}
 export function defineReactive(target, key, value) {
 
-    observe(value) // 递归劫持
-
+    const childOb = observe(value) // 递归劫持 ,对所有的对象都进行属性劫持
     let dep = new Dep() // 每个属性都有一个 dep
     Object.defineProperty(target, key, {
         configurable: true,
@@ -36,6 +49,13 @@ export function defineReactive(target, key, value) {
         get() {
             if (Dep.target) {
                 dep.depend() // 让这个属性的收集器记住当前的 watcher
+
+                if (childOb) {
+                    childOb.dep.depend() // 让数组和对象本身也实现依赖收集
+                    if (Array.isArray(value)) {
+                        dependArray(value)
+                    }
+                }
             }
             return value
         },

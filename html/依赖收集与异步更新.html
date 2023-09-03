@@ -13,11 +13,10 @@
     <!-- 让dep记住这个watcher 稍后属性变化了可以找到对应的dep中存放的 watcher 进行重新渲染-->
     <!-- 观察者模式 -->
 
-    <div id="app" style="background:pink;color:red">
-        <p key="name">hello{{name}}{{age}}</p>
-        <span style="font-size: 20px;"> 姓名：{{name}}</span>
-        <span> 年龄：{{age}}</span>
-
+    <div id="app">
+        {{name}}
+        <hr>
+        {{arr}}
     </div>
     <script src="../dist/vue.js"></script>
 
@@ -30,19 +29,26 @@
                     age: 25,
                     address: {
                         num: 5
-                    }
+                    },
+
                 }
             },
         })
 
-        // 属性和视图关联，做到数据变化可以自动更新视图（观察者模式）
-        setTimeout(() => {
-            // vm.name = '小明'
-            // vm.age = '18'
-            vm.address = 5
-        }, 2000)
 
+        // setTimeout(() => {
+        //     vm.name = '小明'
+        //     vm.age = '18'
+        //     vm.address = 5
+        //     vm.name = '小红'
+        // }, 2000);
 
+        // nextTick不是创建了一个异步任务将任务维护到队列
+        vm.name = 'xiaoming'
+        console.log(11, app.innerHTML);
+        vm.$nextTick(() => {
+            console.log(22, app.innerHTML);
+        })
 
 
         // 1. 观察者模式实现依赖收集

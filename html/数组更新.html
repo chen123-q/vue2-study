@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v2-study</title>
+</head>
+
+<body>
+
+    <div id="app">
+        {{info}}
+        <hr>
+        {{arr}}
+    </div>
+    <script src="../dist/vue.js"></script>
+
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    info: { name: 'cx' }, // 给对象也增加dep,后续用户增加属性可以触发dep更新
+                    arr: [1, 4, 6, ['a', 'b']] // 给数组增加dep,数组增加某一项可以触发dep更新
+
+                }
+            },
+        })
+
+        setTimeout(() => {
+
+            // 新增属性
+            // vm.info.age = 24
+            // vm.info.__ob__.dep.notify() // $set原理
+            //数组更新
+            // vm.arr.push(66)
+            vm.arr[3].push('c')
+        }, 2000);
+
+    </script>
+</body>
+
+</html>

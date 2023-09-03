@@ -22,6 +22,7 @@ methods.forEach(item => {
         }
         inserted && ob.observeArray(inserted)
 
+        ob.dep.notify()
         return res
     }
 })
