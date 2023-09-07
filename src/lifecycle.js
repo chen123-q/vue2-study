@@ -94,3 +94,14 @@ export function mountComponent(vm, el) {
 // 2.模板转换成ast语法树
 // 3.将ast语法树转换成render函数
 // 4.后续每次更新数据只执行render函数
+
+
+
+
+
+export function callHook(vm, hook) { // 调用钩子函数
+    const handlers = vm.$options[hook]
+    if (handlers) {
+        handlers.forEach(handler => handler.call(vm))
+    }
+}
