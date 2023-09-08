@@ -30,7 +30,8 @@
         // 属性和视图关联，做到数据变化可以自动更新视图（观察者模式）
         setTimeout(() => {
             vm.name = '小明'
-            vm.age = '18'
+            vm.age = '28'
+            // console.log(111, vm._render());
             vm._update(vm._render()) // 重新根据数据渲染出一个虚拟DOM
         }, 2000)
 

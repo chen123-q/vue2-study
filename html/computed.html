@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>computed</title>
+</head>
+
+<body>
+    <!-- 给模板中的属性增加一个收集器 dep -->
+    <!-- 页面渲染的时候将渲染逻辑封装到 watcher 中  vm._update(vm._render())-->
+    <!-- 让dep记住这个watcher 稍后属性变化了可以找到对应的dep中存放的 watcher 进行重新渲染-->
+    <!-- 观察者模式 -->
+
+
+    <!-- 坑：app里还没有处理注释，不能写注释 -->
+    <div id="app">
+        <p>{{fullName}}</p>
+        <p>{{fullName}}</p>
+        <p>{{fullName}}</p>
+
+
+
+    </div>
+    <script src="../dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script> -->
+
+
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    firstName: 'c',
+                    lastName: 'x',
+
+                }
+            },
+            // 计算属性 依赖的值发生变化才会重新执行方法  计算属性中维护了一个 dirty 属性，默认不会立即执行
+            // 计算属性就是一个 defineProperty
+            // 计算属性也是一个 watcher,默认会创造一个渲染 watcher
+            computed: {
+                /* fullName() {
+                    return this.firstName + this.lastName
+                }, */
+                fullName: {
+                    get() {
+                        console.log('run');
+                        return this.firstName + this.lastName
+                    },
+                    set(newVal) {
+                        console.log(newVal);
+                    }
+                }
+            }
+        })
+        setTimeout(() => {
+            vm.lastName = 'hhhhh'
+        }, 2000)
+
+        /*  setTimeout(() => {
+             vm.fullName = 'hhhhhhh'
+         }, 2000) */
+
+    </script>
+</body>
+
+</html>
