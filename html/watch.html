@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>watch</title>
+</head>
+
+<body>
+
+
+
+    <!-- 坑：app里还没有处理注释，不能写注释 -->
+    <div id="app">
+        <p>{{lastName}}</p>
+    </div>
+    <script src="../dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script> -->
+
+
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    firstName: 'c',
+                    lastName: 'x',
+
+                }
+            },
+            methods: {
+                fn(newVal, oldVal) {
+                    console.log(newVal, oldVal);
+                }
+            },
+
+            // watch: {
+            //     lastName: ['fn', function (newVal, oldVal) {
+            //         console.log(newVal, oldVal, 1111);
+            //     },]
+            // },
+
+            watch: {
+                lastName(newVal, oldVal) {
+                    console.log(newVal, oldVal, 1111);
+                }
+            },
+
+            // watch: {
+            //     lastName: 'fn'
+            // },
+        })
+
+        // 上面的写法会被转化成 $watch写法
+        // vm.$watch(() => vm.lastName, vm.fn)
+
+        setTimeout(() => {
+            vm.lastName = 'qqqq'
+            vm.lastName = '1111'
+            vm.lastName = 'hhhhh'
+        }, 2000)
+
+    </script>
+</body>
+
+</html>

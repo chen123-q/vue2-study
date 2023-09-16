@@ -9,11 +9,19 @@ let id = 0;
 
 class Watcher {
     // 不同组件有不同的watcher
-    constructor(vm, fn, options) {
+    constructor(vm, exprOrFn, options, cb) {
         this.id = id++;
 
         this.renderWatcher = options; // 是一个渲染 watcher
-        this.getter = fn; // 调用这个函数可以发生取值操作
+        if (typeof exprOrFn === 'string') {
+            this.getter = function () {
+                return vm[exprOrFn]
+            }
+        } else {
+            this.getter = exprOrFn; // 调用这个函数可以发生取值操作
+        }
+
+
         this.deps = []; // 后续实现计算属性，和一些清理工作需要用到
         this.depsId = new Set();
 
@@ -21,8 +29,10 @@ class Watcher {
         this.dirty = this.lazy
         this.vm = vm
 
+        this.cb = cb
+        this.user = options.user // watch: 标识是否是用户自己的watcher
 
-        this.lazy ? undefined : this.get();
+        this.value = this.lazy ? undefined : this.get();
     }
     addDep(dep) {
         // 一个组件对应着多个属性 重复的属性也不用记录
@@ -66,7 +76,12 @@ class Watcher {
 
     run() {
         // console.log("update");
-        this.get();
+        let oldValue = this.value
+        let newValue = this.get(); // 渲染的时候用的是最新的vm来渲染的
+        if (this.user) {
+            this.cb.call(this.vm, newValue, oldValue)
+        }
+
     }
 }
 

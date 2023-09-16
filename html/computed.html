@@ -40,6 +40,7 @@
             // 计算属性 依赖的值发生变化才会重新执行方法  计算属性中维护了一个 dirty 属性，默认不会立即执行
             // 计算属性就是一个 defineProperty
             // 计算属性也是一个 watcher,默认会创造一个渲染 watcher
+            // 底层就是一个带有dirty属性的watcher
             computed: {
                 /* fullName() {
                     return this.firstName + this.lastName

@@ -10,8 +10,34 @@ export function initState(vm) {
     if (opts.computed) {
         initComputed(vm)
     }
+    if (opts.watch) {
+        initWatch(vm)
+    }
 }
 
+function initWatch(vm) {
+    const { watch } = vm.$options // 字符串 数组 函数
+    for (let key in watch) {
+        const handler = watch[key]
+        if (Array.isArray(handler)) {
+            for (let i = 0; i < handler.length; i++) {
+                createWatch(vm, key, handler[i])
+            }
+        } else {
+            createWatch(vm, key, handler)
+        }
+    }
+}
+
+
+function createWatch(vm, key, handler) {
+    // 字符串 函数
+    if (typeof handler === 'string') {
+        handler = vm[handler]
+    }
+    return vm.$watch(key, handler)
+
+}
 // this.$data.name => this.name
 function proxy(vm, data) {
     Object.keys(data).forEach(key => {
@@ -73,7 +99,7 @@ function createComputedGetter(key) {
             // 如果是脏的就去执行用户传入的函数
             watcher.evaluate() // 求值后dirty变为false,下次就不求了
         }
-        // 计算属性出栈后还有渲染 watcher 让计算属性watcher里面的属性也去收集上一层 watcher
+        // 计算属性出栈后还有渲染watcher 让计算属性watcher里面的属性也去收集上一层 watcher
         if (Dep.target) {
             watcher.depend()
         }
