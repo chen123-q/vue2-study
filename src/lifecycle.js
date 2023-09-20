@@ -1,51 +1,9 @@
 import Watcher from "./observe/watcher";
 import { createElementvNode, createTextvNode } from "./vdom";
+import { path } from "./vdom/path";
 
 
-// 处理属性
-function pathProps(el, props) {
-    for (const key in props) {
-        if (key === 'style') {  // style:{color:red}
-            for (const styleName in props.style) {
-                el.style[styleName] = props.style[styleName]
-            }
-        } else {
 
-            el.setAttribute(key, props[key])
-        }
-    }
-}
-function createElm(vNode) {
-    let { tag, data, children, text } = vNode;
-    if (typeof tag === "string") {
-        vNode.el = document.createElement(tag); // 将真实节点和虚拟节点对应起来
-        pathProps(vNode.el, data)
-
-        children.forEach((child) => {
-            vNode.el.appendChild(createElm(child));
-        });
-    } else {
-        vNode.el = document.createTextNode(text);
-    }
-    return vNode.el;
-}
-
-function path(oldVNode, vNode) {
-    const isRealElement = oldVNode.nodeType;
-    if (isRealElement) {
-        const elm = oldVNode; // 获取真实元素
-        const parentElm = elm.parentNode; // 拿到父元素
-
-        const newElm = createElm(vNode);
-        parentElm.insertBefore(newElm, elm.nextSibling) // 先插入新节点
-        parentElm.removeChild(elm) // 再删除老节点
-
-        return newElm
-    } else {
-        // diff算法
-
-    }
-}
 export function initLifeCycle(Vue) {
     Vue.prototype._update = function (vNode) {
         // 将vNode转化成真实dom

@@ -1,6 +1,8 @@
 import { observe } from "./observe/index"
-import Watcher from './observe/watcher'
+import Watcher, { nextTick } from "./observe/watcher.js"
 import Dep from "./observe/dep"
+
+
 export function initState(vm) {
     const opts = vm.$options
     if (opts.data) {
@@ -104,5 +106,20 @@ function createComputedGetter(key) {
             watcher.depend()
         }
         return watcher.value
+    }
+}
+
+
+export function initStateMixin(Vue) {
+    Vue.prototype.$nextTick = nextTick
+
+    // 最终调用的都是这个方法
+    Vue.prototype.$watch = function (exprOrFn, cb, options = {}) {
+        // lastName
+        // ()=>lastName
+
+        // lastName的值变化了，直接调用cb函数即可
+        new Watcher(this, exprOrFn, { user: true }, cb)
+
     }
 }
