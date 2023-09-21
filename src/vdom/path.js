@@ -5,8 +5,8 @@ export function pathProps(el, oldProps, props) {
     // 老的属性（样式）中有，新的没有，要删除老的
 
     // 比较 style
-    let oldStyle = oldProps.style || {}
-    let newStyle = props.style || {}
+    let oldStyle = oldProps?.style || {}
+    let newStyle = props?.style || {}
     for (let key in oldStyle) {
         if (!newStyle[key]) {
             el.style[key] = ''
@@ -99,17 +99,16 @@ function pathVnode(oldVNode, vNode) {
 
 
         // 3.2 一方有儿子 一方没有儿子
-    } else if (newChildren.length > 0) { // 没有老的，有新的 添加
+    } else if (newChildren.length > 0) { // 老的没有，新的有 添加新的
 
 
         mountChildren(el, newChildren)
 
-    } else if (oldChildren.length > 0) {// 有老的，没有新的 删除
+    } else if (oldChildren.length > 0) {// 老的有，新的没有 删除老的
 
 
         el.innerHTML = '' // 可以循环删除
     }
-    console.log(oldChildren, newChildren);
     return el
 }
 
@@ -119,11 +118,11 @@ function mountChildren(el, newChildren) {
         el.appendChild(createElm(child))
 
     }
-
 }
 
 function updateChildren(el, oldChildren, newChildren) {
-    // 双指针
+    // v2双指针 比较两个节点
+    // 操作节点通常会是 push shift pop unshift reverse sort 这些方法
 
     let oldStartIndex = 0
     let newStartIndex = 0
@@ -135,6 +134,95 @@ function updateChildren(el, oldChildren, newChildren) {
     let oldEndVnode = oldChildren[oldEndIndex]
     let newEndVnode = newChildren[newEndIndex]
 
+    function makeIndexByKey(children) {
+        let map = {}
+        children.forEach((child, index) => {
+            map[child.key] = index
+        })
+        return map
+    }
+    let map = makeIndexByKey(oldChildren)
 
-    console.log(el, oldChildren, newChildren)
+    // 双方有一方头指针大于尾指针就停止循环
+    while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
+
+        if (!oldStartVnode) {
+            oldStartVnode = oldChildren[++oldStartIndex]
+        } else if (!oldEndVnode) {
+            oldEndVnode = oldChildren[--oldEndIndex]
+        } else if (isSameVnode(oldStartVnode, newStartVnode)) { // 头头比对 从前往后比 push abc => abcd
+            // 如果是相同节点，递归比较子节点
+            pathVnode(oldStartVnode, newStartVnode)
+            oldStartVnode = oldChildren[++oldStartIndex]
+            newStartVnode = newChildren[++newStartIndex]
+
+        } else if (isSameVnode(oldEndVnode, newEndVnode)) {
+            // 尾尾比对 从后往前比 unshift bcd => abcd
+            pathVnode(oldEndVnode, newEndVnode)
+            oldEndVnode = oldChildren[--oldEndIndex]
+            newEndVnode = newChildren[--newEndIndex]
+
+        } else if (isSameVnode(oldEndVnode, newStartVnode)) {
+            // 老尾新头 交叉比对 abcd => dabc
+            pathVnode(oldEndVnode, newStartVnode)
+            el.insertBefore(oldEndVnode.el, oldStartVnode.el)
+            // 将老的尾巴移动到老的前面
+            oldEndVnode = oldChildren[--oldEndIndex]
+            newStartVnode = newChildren[++newStartIndex]
+
+        } else if (isSameVnode(oldStartVnode, newEndVnode)) {
+            // 老头新尾 abcd => dcba
+            pathVnode(oldStartVnode, newEndVnode)
+
+            // insertBefore 具备移动性 会将原来的元素移走
+            el.insertBefore(oldStartVnode.el, oldEndVnode.el.nextSibling)
+            oldStartVnode = oldChildren[++oldStartIndex]
+            newEndVnode = newChildren[--newEndIndex]
+
+        } else {
+
+            // 乱序比对
+            // 根据老的列表做一个映射关系，用新的去找，找到则移动，找不到则添加，最后多余的删除
+
+            let moveIndex = map[newStartVnode.key] // 如果拿到说明是要移动的索引
+            if (moveIndex) {
+                let moveVnode = oldChildren[moveIndex] // 找到对应的虚拟节点复用
+                el.insertBefore(moveVnode.el, oldStartVnode.el)
+                oldChildren[moveIndex] = undefined // 表示这个节点已经被移走了
+                pathVnode(moveVnode, newStartVnode)
+            } else {
+                el.insertBefore(createElm(newStartVnode), oldStartVnode.el)
+            }
+            newStartVnode = newChildren[++newStartIndex]
+        }
+
+
+    }
+
+    // 多余的新的插入
+    if (newStartIndex <= newEndIndex) {
+        for (let i = newStartIndex; i < newChildren.length; i++) {
+            const childEl = createElm(newChildren[i])
+            // el.appendChild(childEl)
+
+            // 这里可能是向后追加也可能是向前追加
+            const next = newChildren[newEndIndex + 1]
+            const anchor = next ? next.el : null
+            el.insertBefore(childEl, anchor) // anchor 为null 会认为是appendChild
+
+        }
+
+    }
+
+    // 多余的老的删除
+    if (oldStartIndex <= oldEndIndex) {
+        for (let i = oldStartIndex; i <= oldEndIndex; i++) {
+            if (oldChildren[i]) {
+
+                let childEl = oldChildren[i].el
+                el.removeChild(childEl)
+            }
+        }
+    }
+
 }
