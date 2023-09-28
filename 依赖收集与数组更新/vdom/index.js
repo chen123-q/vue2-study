@@ -1,7 +1,7 @@
 
 // h() _c()
 
-export function createElementvNode(vm, tag, data, ...children) {
+export function createElementVNode(vm, tag, data, ...children) {
     data = data ?? {}
     let { key } = data
     if (key) delete data.key
@@ -10,7 +10,7 @@ export function createElementvNode(vm, tag, data, ...children) {
 
 
 // _v()
-export function createTextvNode(vm, text) {
+export function createTextVNode(vm, text) {
     return vNode(vm, undefined, undefined, undefined, undefined, text)
 
 }

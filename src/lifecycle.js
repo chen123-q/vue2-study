@@ -1,27 +1,36 @@
 import Watcher from "./observe/watcher";
-import { createElementvNode, createTextvNode } from "./vdom";
+import { createElementVNode, createTextVNode } from "./vdom";
 import { path } from "./vdom/path";
 
 
 
 export function initLifeCycle(Vue) {
-    Vue.prototype._update = function (vNode) {
-        // 将vNode转化成真实dom
+    Vue.prototype._update = function (vnode) {
+        // 将vnode转化成真实dom
         const vm = this;
         const el = vm.$el;
 
-        // path 既有初始化的功能 又有更新的功能
-        vm.$el = path(el, vNode);
+        const prevVnode = vm._vnode
+        vm._vnode = vnode // 把组件第一次产生的虚拟节点保存到 _vnode上
+
+        if (prevVnode) {
+            // updates
+            vm.$el = path(prevVnode, vnode)
+        } else {
+            // initial render
+            vm.$el = path(el, vnode);
+        }
+
     };
     // _c(div,{id:"app",style:{"background":"pink","color":"red"}},
     //    _c(p,null,_v("hello"+_s(name)+_s(age))),
     //    _c(span,{style:{"font-size":" 20px"}},_v("姓名："+_s(name))),
     //    _c(span,null,_v("年龄："+_s(age))))
     Vue.prototype._c = function () {
-        return createElementvNode(this, ...arguments);
+        return createElementVNode(this, ...arguments);
     };
     Vue.prototype._v = function () {
-        return createTextvNode(this, ...arguments);
+        return createTextVNode(this, ...arguments);
     };
     Vue.prototype._s = function (value) {
         return typeof value === "object" ? JSON.stringify(value) : value;

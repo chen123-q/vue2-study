@@ -1,9 +1,7 @@
-import { compileToFunction } from "./compiler/index.js"
 import { initGlobalAPI } from "./globalAPI.js"
 import { initMixin } from "./init.js"
 import { initLifeCycle } from "./lifecycle.js"
 import { initStateMixin } from "./state.js"
-import { createElm, path } from "./vdom/path.js"
 
 function Vue(options) {
     this._init(options)
@@ -19,7 +17,7 @@ initGlobalAPI(Vue)
 initStateMixin(Vue) // nextTick $watch
 
 /************** 测试 vDom **************/
-let render1 = compileToFunction(`<ul a=1 style="color:red">
+/* let render1 = compileToFunction(`<ul a=1 style="color:red">
 <li key = "a">a</li>
 <li key = "b">b</li>
 <li key = "c">c</li>
@@ -46,7 +44,7 @@ let nextVnode = render2.call(vm2)
 setTimeout(() => {
     path(prevVnode, nextVnode)
 
-}, 1000)
+}, 1000) */
 
 // diff 是一个平级比对的过程
 

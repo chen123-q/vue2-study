@@ -1,5 +1,5 @@
 import Watcher from "./observe/watcher";
-import { createElementvNode, createTextvNode } from "./vdom";
+import { createElementVNode, createTextVNode } from "./vdom";
 
 
 // 处理属性
@@ -60,10 +60,10 @@ export function initLifeCycle(Vue) {
     //    _c(span,{style:{"font-size":" 20px"}},_v("姓名："+_s(name))),
     //    _c(span,null,_v("年龄："+_s(age))))
     Vue.prototype._c = function () {
-        return createElementvNode(this, ...arguments);
+        return createElementVNode(this, ...arguments);
     };
     Vue.prototype._v = function () {
-        return createTextvNode(this, ...arguments);
+        return createTextVNode(this, ...arguments);
     };
     Vue.prototype._s = function (value) {
         return typeof value === "object" ? JSON.stringify(value) : value;

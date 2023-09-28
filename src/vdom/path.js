@@ -1,5 +1,12 @@
 import { isSameVnode } from ".";
 
+function createComponent(vnode) {
+    let i = vnode.data
+    if ((i = i.hook) && (i = i.init)) {
+        i(vnode)
+    }
+}
+
 // 处理属性
 export function pathProps(el, oldProps, props) {
     // 老的属性（样式）中有，新的没有，要删除老的
@@ -34,6 +41,12 @@ export function pathProps(el, oldProps, props) {
 export function createElm(vNode) {
     let { tag, data, children, text } = vNode;
     if (typeof tag === "string") {
+
+        if (createComponent(vNode)) { // 组件
+            return
+        }
+
+
         vNode.el = document.createElement(tag); // 将真实节点和虚拟节点对应起来
         pathProps(vNode.el, {}, data)
 
@@ -47,6 +60,8 @@ export function createElm(vNode) {
 }
 
 export function path(oldVNode, vNode) {
+    if (!oldVNode) return createElm(vNode)// 组件的挂载
+
     // 初次渲染
     const isRealElement = oldVNode.nodeType;
     if (isRealElement) {

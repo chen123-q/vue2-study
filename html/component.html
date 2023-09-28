@@ -13,12 +13,23 @@
         <span><a href="">{{name}}</a></span>
 
     </div>
+    <div id="root"></div>
     <script src="../dist/vue.js"></script>
     <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.7.14/vue.js"></script> -->
-
     <script>
-
-        const vm = new Vue({
+        Vue.component('my-button', {
+            template: `<button>全局button</button>`
+        })
+        const Sub = Vue.extend({
+            template: `<div>子组件  <my-button></my-button></div>`,
+            components: {
+                'my-button': {
+                    template: `<button>全局button</button>`
+                }
+            }
+        })
+        new Sub().$mount("#root")
+        /* const vm = new Vue({
             el: '#app',
             data() {
                 return {
@@ -26,11 +37,7 @@
                 }
             },
 
-        })
-
-        setTimeout(() => {
-            vm.name = 'cccccc'
-        }, 2000)
+        }) */
 
     </script>
 </body>
