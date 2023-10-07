@@ -1,6 +1,6 @@
 import Watcher from "./observe/watcher";
 import { createElementVNode, createTextVNode } from "./vdom";
-import { path } from "./vdom/path";
+import { patch } from "./vdom/patch";
 
 
 
@@ -15,10 +15,10 @@ export function initLifeCycle(Vue) {
 
         if (prevVnode) {
             // updates
-            vm.$el = path(prevVnode, vnode)
+            vm.$el = patch(prevVnode, vnode)
         } else {
             // initial render
-            vm.$el = path(el, vnode);
+            vm.$el = patch(el, vnode);
         }
 
     };

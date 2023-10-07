@@ -40,7 +40,7 @@ class Watcher {
         if (!this.depsId.has(id)) {
             this.deps.push(dep);
             this.depsId.add(id);
-            dep.addSub(this); // watchet 已经记住了dep而且去重了，此时 dep也记住了watcher
+            dep.addSub(this); // watcher 已经记住了dep而且去重了，此时 dep也记住了watcher
         }
     }
 

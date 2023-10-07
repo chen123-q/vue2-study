@@ -42,7 +42,7 @@ let vm2 = new Vue({ data: { name: 'cx' } })
 let nextVnode = render2.call(vm2)
 
 setTimeout(() => {
-    path(prevVnode, nextVnode)
+    patch(prevVnode, nextVnode)
 
 }, 1000) */
 

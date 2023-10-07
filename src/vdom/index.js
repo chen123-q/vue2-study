@@ -7,14 +7,14 @@ const isReservenTag = (tag) => {
 
 export function createElementVNode(vm, tag, data, ...children) {
     data = data ?? {}
-    let { key } = data
+    const { key } = data
     if (key) delete data.key
     if (isReservenTag(tag)) {
 
         return vNode(vm, tag, key, data, children)
     } else {
         // 创建一个组件的虚拟节点
-        let Ctor = vm.$options.components[tag]
+        const Ctor = vm.$options.components[tag]
 
         // Ctor 可能是一个Sub类，也可能是组件的obj选项
         return creatComponentVnode(vm, tag, key, data, children, Ctor)
@@ -28,8 +28,8 @@ function creatComponentVnode(vm, tag, key, data, children, Ctor) {
     data.hook = {
         init(vnode) { // 如果是组件调用此方法
             // 保存组件的实例到虚拟节点上
-            let instance = vnode.componentInstance = vnode.componentOptions.Ctor
-            instance.$mount()
+            let instance = vnode.componentInstance = new vnode.componentOptions.Ctor
+            instance.$mount() // instance.$el
         }
     }
     return vNode(vm, tag, key, data, children, null, { Ctor })
@@ -51,7 +51,7 @@ function vNode(vm, tag, key, data, children, text, componentOptions) {
         data,
         children,
         text,
-        componentOptions
+        componentOptions // 组件的构造函数
     }
 }
 

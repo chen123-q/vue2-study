@@ -22,11 +22,11 @@
         })
         const Sub = Vue.extend({
             template: `<div>子组件  <my-button></my-button></div>`,
-            components: {
-                'my-button': {
-                    template: `<button>全局button</button>`
-                }
-            }
+            // components: {
+            //     'my-button': {
+            //         template: `<button>子组件的button</button>`
+            //     }
+            // }
         })
         new Sub().$mount("#root")
         /* const vm = new Vue({

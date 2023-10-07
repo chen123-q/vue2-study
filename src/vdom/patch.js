@@ -3,12 +3,16 @@ import { isSameVnode } from ".";
 function createComponent(vnode) {
     let i = vnode.data
     if ((i = i.hook) && (i = i.init)) {
-        i(vnode)
+        i(vnode) // 初始化组件
+    }
+
+    if (vnode.componentInstance) {
+        return true // 说明是组件
     }
 }
 
 // 处理属性
-export function pathProps(el, oldProps, props) {
+export function patchProps(el, oldProps, props) {
     // 老的属性（样式）中有，新的没有，要删除老的
 
     // 比较 style
@@ -39,16 +43,16 @@ export function pathProps(el, oldProps, props) {
     }
 }
 export function createElm(vNode) {
-    let { tag, data, children, text } = vNode;
+    const { tag, data, children, text } = vNode;
     if (typeof tag === "string") {
 
+        // 创建真实元素也要区分是组件还是元素
         if (createComponent(vNode)) { // 组件
-            return
+            return vNode.componentInstance.$el
         }
 
-
         vNode.el = document.createElement(tag); // 将真实节点和虚拟节点对应起来
-        pathProps(vNode.el, {}, data)
+        patchProps(vNode.el, {}, data)
 
         children.forEach((child) => {
             vNode.el.appendChild(createElm(child));
@@ -59,8 +63,10 @@ export function createElm(vNode) {
     return vNode.el;
 }
 
-export function path(oldVNode, vNode) {
-    if (!oldVNode) return createElm(vNode)// 组件的挂载
+export function patch(oldVNode, vNode) {
+    if (!oldVNode) {// 组件的挂载  
+        return createElm(vNode) // vm.$el 对应的就是组件渲染的结果
+    }
 
     // 初次渲染
     const isRealElement = oldVNode.nodeType;
@@ -76,11 +82,11 @@ export function path(oldVNode, vNode) {
     } else {
         // diff算法
 
-        return pathVnode(oldVNode, vNode)
+        return patchVnode(oldVNode, vNode)
 
     }
 }
-function pathVnode(oldVNode, vNode) {
+function patchVnode(oldVNode, vNode) {
     // 1. 两个节点不是同一个节点，用新的替换老的
     if (!isSameVnode(oldVNode, vNode)) { // tag === tag key === key
         let el = createElm(vNode)
@@ -98,7 +104,7 @@ function pathVnode(oldVNode, vNode) {
     }
 
     //   2.2 如果是标签 比对标签的属性
-    pathProps(el, oldVNode.data, vNode.data)
+    patchProps(el, oldVNode.data, vNode.data)
 
 
     // 3. 父亲比对完，比对儿子
@@ -167,19 +173,19 @@ function updateChildren(el, oldChildren, newChildren) {
             oldEndVnode = oldChildren[--oldEndIndex]
         } else if (isSameVnode(oldStartVnode, newStartVnode)) { // 头头比对 从前往后比 push abc => abcd
             // 如果是相同节点，递归比较子节点
-            pathVnode(oldStartVnode, newStartVnode)
+            patchVnode(oldStartVnode, newStartVnode)
             oldStartVnode = oldChildren[++oldStartIndex]
             newStartVnode = newChildren[++newStartIndex]
 
         } else if (isSameVnode(oldEndVnode, newEndVnode)) {
             // 尾尾比对 从后往前比 unshift bcd => abcd
-            pathVnode(oldEndVnode, newEndVnode)
+            patchVnode(oldEndVnode, newEndVnode)
             oldEndVnode = oldChildren[--oldEndIndex]
             newEndVnode = newChildren[--newEndIndex]
 
         } else if (isSameVnode(oldEndVnode, newStartVnode)) {
             // 老尾新头 交叉比对 abcd => dabc
-            pathVnode(oldEndVnode, newStartVnode)
+            patchVnode(oldEndVnode, newStartVnode)
             el.insertBefore(oldEndVnode.el, oldStartVnode.el)
             // 将老的尾巴移动到老的前面
             oldEndVnode = oldChildren[--oldEndIndex]
@@ -187,7 +193,7 @@ function updateChildren(el, oldChildren, newChildren) {
 
         } else if (isSameVnode(oldStartVnode, newEndVnode)) {
             // 老头新尾 abcd => dcba
-            pathVnode(oldStartVnode, newEndVnode)
+            patchVnode(oldStartVnode, newEndVnode)
 
             // insertBefore 具备移动性 会将原来的元素移走
             el.insertBefore(oldStartVnode.el, oldEndVnode.el.nextSibling)
@@ -204,7 +210,7 @@ function updateChildren(el, oldChildren, newChildren) {
                 let moveVnode = oldChildren[moveIndex] // 找到对应的虚拟节点复用
                 el.insertBefore(moveVnode.el, oldStartVnode.el)
                 oldChildren[moveIndex] = undefined // 表示这个节点已经被移走了
-                pathVnode(moveVnode, newStartVnode)
+                patchVnode(moveVnode, newStartVnode)
             } else {
                 el.insertBefore(createElm(newStartVnode), oldStartVnode.el)
             }

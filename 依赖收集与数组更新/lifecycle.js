@@ -3,7 +3,7 @@ import { createElementVNode, createTextVNode } from "./vdom";
 
 
 // 处理属性
-function pathProps(el, props) {
+function patchProps(el, props) {
     for (const key in props) {
         if (key === 'style') {  // style:{color:red}
             for (const styleName in props.style) {
@@ -19,7 +19,7 @@ function createElm(vNode) {
     let { tag, data, children, text } = vNode;
     if (typeof tag === "string") {
         vNode.el = document.createElement(tag); // 将真实节点和虚拟节点对应起来
-        pathProps(vNode.el, data)
+        patchProps(vNode.el, data)
 
         children.forEach((child) => {
             vNode.el.appendChild(createElm(child));
@@ -30,7 +30,7 @@ function createElm(vNode) {
     return vNode.el;
 }
 
-function path(oldVNode, vNode) {
+function patch(oldVNode, vNode) {
     const isRealElement = oldVNode.nodeType;
     if (isRealElement) {
         const elm = oldVNode; // 获取真实元素
@@ -52,8 +52,8 @@ export function initLifeCycle(Vue) {
         const vm = this;
         const el = vm.$el;
 
-        // path 既有初始化的功能 又有更新的功能
-        vm.$el = path(el, vNode);
+        // patch 既有初始化的功能 又有更新的功能
+        vm.$el = patch(el, vNode);
     };
     // _c(div,{id:"app",style:{"background":"pink","color":"red"}},
     //    _c(p,null,_v("hello"+_s(name)+_s(age))),
